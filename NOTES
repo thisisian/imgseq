@@ -1,0 +1,49 @@
+This is a cmdline frontend for performing operations on image sequences.
+
+Images load into an ImgSeq object for which Operation objects can operate on.
+
+// cmdline format
+procimgseq [First image] [Operation] [Options]
+
+// Input filename conventions
+Needs to support following formats for importing image sequences:
+
+No leading 0's:
+img1.tga, img2.tga, ..., img25.tga, ...
+
+Leading 0's:
+img001.tga, img002.tga, ..., img225.tga, ...
+
+Index numbers should be at beginning or end of filename. 
+Numbers before and after are invalid.
+
+// Output filename convention
+Always uses sufficient number of leading zeros.
+%n character appearing in filename specifies where to place
+img%n.tga
+gives
+img001.tga, img002.tga, ... img100.tga
+Image sequences index from 1
+
+If no %n character is specified, the output filename is invalid.
+
+// Operations 
+Operations can have set of options
+Operations need to be able to also take image sequences as imput
+How to make operations extensible???? 
+
+Sequence:
+    - Use chooses first image, software finds remaining images
+    - Find all images in given sequence
+    - Ensure all images are similar format (same dimentions, color info...)
+        - If they are not, stop the sequence at the first image which doesn't match previous
+    - Report to user what range of images were loaded (first and last file, number of files found)
+
+
+Ideas:
+Maybe the images should just be references to files and not an actual image? This would make the user able to write for whatever image library they want.
+
+
+Steps: 
+    - 
+
