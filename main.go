@@ -18,6 +18,21 @@ func main() {
 	imgseq, err := FromString(args[0])
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
+		os.Exit(1)
 	}
 
+	var op timeshift
+	switch args[1] {
+	case "timeshift":
+		{
+
+			op, err := CreateTimeshift(args[2])
+			if err != nil {
+				fmt.Fprint(os.Stderr, err)
+				os.Exit(1)
+			}
+		}
+	}
+	op.Apply(imgseq)
+	os.Exit(0)
 }
