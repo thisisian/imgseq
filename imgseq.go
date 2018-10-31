@@ -14,7 +14,7 @@ type ImgSeq struct {
 	config image.Config
 }
 
-func FromString(filepath string) (ImgSeq, error) {
+func initImgSeqString(filepath string) (ImgSeq, error) {
 	var s string
 
 	file, err := os.Open(filepath)
@@ -24,14 +24,14 @@ func FromString(filepath string) (ImgSeq, error) {
 	}
 	defer file.Close()
 
-	imgseq, err := fromFile(file)
+	imgseq, err := initImgSeqFile(file)
 	if err != nil {
 		return ImgSeq{}, nil
 	}
 	return imgseq, nil
 }
 
-func fromFile(f *os.File) (ImgSeq, error) {
+func initImgSeqFile(f *os.File) (ImgSeq, error) {
 	config, _, err := image.DecodeConfig(f)
 	if err != nil {
 		return ImgSeq{}, err

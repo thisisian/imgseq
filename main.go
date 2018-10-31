@@ -15,7 +15,7 @@ func main() {
 	fmt.Printf("Operation: %s\n", args[1])  // DEBUG
 	fmt.Printf("Options: %s\n", args[2])    // DEBUG
 
-	imgseq, err := FromString(args[0])
+	imgseq, err := initImgSeqString(args[0])
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
 		os.Exit(1)
@@ -25,8 +25,7 @@ func main() {
 	switch args[1] {
 	case "timeshift":
 		{
-
-			op, err := CreateTimeshift(args[2])
+			op, err = initTimeshift(args[2])
 			if err != nil {
 				fmt.Fprint(os.Stderr, err)
 				os.Exit(1)

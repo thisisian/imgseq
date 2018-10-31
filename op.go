@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -10,31 +11,44 @@ type Operation interface {
 }
 
 type timeshift struct {
-	filterimg ImgSeq
+	filterImg  ImgSeq
+	filterRage int
 }
 
-func CreateTimeshift(opStr string) (timeshift, error) {
+func initTimeshift(opStr string) (timeshift, error) {
 	opts, vals, err := parseOptions(opStr)
 	if err != nil {
 		return timeshift{}, err
 	}
-	var filterimg ImgSeq
+	var filterImg ImgSeq
+	var filterRange int
+	var filterImgFlag, filterRangeFlag = false, false
 	for i, o := range opts {
 		switch o {
 		case "filterimg":
-			filterimg, err = FromString(vals[i])
+			filterImg, err = initImgSeqString(vals[i])
 			if err != nil {
 				return timeshift{}, err
 			}
+			filterImgFlag = true
+		case "range":
+			filterRange, err = strconv.Atoi(vals[i])
+			if err != nil {
+				return timeshift{}, err
+			}
+			filterRangeFlag = true
 		default:
 			return timeshift{}, errors.New("Invalid option")
 		}
 	}
-	return timeshift{filterimg}, nil
+	if !(filterRangeFlag || filterImgFlag) {
+		return timeshift{}, errors.New("Missing option or options")
+	}
+	return timeshift{filterImg, filterRange}, nil
 }
 
 func (t timeshift) Apply(imgSeq ImgSeq) (ImgSeq, error) {
-	return ImgSeq, nil // TODO
+	return imgSeq, nil // TODO
 }
 
 // Parses options into parallel slices of options and values
@@ -48,8 +62,8 @@ func parseOptions(opStr string) ([]string, []string, error) {
 		if len(opSplit) != 2 {
 			return opts, vals, errors.New("Invalid option")
 		}
-		opts := append(opts, opSplit[0])
-		vals := append(vals, opSplit[1])
+		opts = append(opts, opSplit[0])
+		vals = append(vals, opSplit[1])
 	}
 	return opts, vals, nil
 }
