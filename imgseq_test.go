@@ -7,6 +7,20 @@ import (
 	"testing"
 )
 
+func createTestDir() {
+	err := os.Mkdir("./temp", 0777)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func removeTestDir() {
+	err := os.Remove("./temp")
+	if err != nil {
+		panic(err)
+	}
+}
+
 func createImageFile(name string, width int, height int) {
 	img := image.NewNRGBA(image.Rect(0, 0, width, height))
 	f, err := os.Create(name)
@@ -27,24 +41,28 @@ func createImageFile(name string, width int, height int) {
 }
 
 func TestSingleFileNoNums(t *testing.T) {
-	createImageFile("./files/img.png", 10, 10)
-	seq, err := FromString("./files/img.png")
+	createTestDir()
+	defer removeTestDir()
+	createImageFile("./temp/img.png", 10, 10)
+	seq, err := initImgSeqString("./temp/img.png")
 	if err != nil {
 		panic("Failed to create image seq")
 	}
-	os.Remove("./files/img.png")
+	os.Remove("./temp/img.png")
 	if len(seq.images) != 1 {
 		t.Fail()
 	}
 }
 
 func TestSingleFileWithNums(t *testing.T) {
-	createImageFile("./files/img09.png", 10, 10)
-	seq, err := FromString("./files/img09.png")
+	createTestDir()
+	defer removeTestDir()
+	createImageFile("./temp/img09.png", 10, 10)
+	seq, err := initImgSeqString("./temp/img09.png")
 	if err != nil {
 		panic("Failed to create image seq")
 	}
-	os.Remove("./files/img09.png")
+	os.Remove("./temp/img09.png")
 	if len(seq.images) != 1 {
 		t.Fail()
 	}
@@ -52,20 +70,22 @@ func TestSingleFileWithNums(t *testing.T) {
 
 //func TestFileSequenceEndsWithMissingFile
 func TestFileSequenceEndsWithMissingFile(t *testing.T) {
-	createImageFile("./files/img10.png", 10, 10)
-	createImageFile("./files/img11.png", 10, 10)
-	createImageFile("./files/img12.png", 10, 10)
-	createImageFile("./files/img13.png", 10, 10)
-	os.Open("./files/img11.png")
+	createTestDir()
+	defer removeTestDir()
+	createImageFile("./temp/img10.png", 10, 10)
+	createImageFile("./temp/img11.png", 10, 10)
+	createImageFile("./temp/img12.png", 10, 10)
+	createImageFile("./temp/img13.png", 10, 10)
+	os.Open("./temp/img11.png")
 
-	seq, err := FromString("./files/img10.png")
+	seq, err := initImgSeqString("./temp/img10.png")
 	if err != nil {
 		panic("Failed to create image seq")
 	}
-	os.Remove("./files/img10.png")
-	os.Remove("./files/img11.png")
-	os.Remove("./files/img12.png")
-	os.Remove("./files/img13.png")
+	os.Remove("./temp/img10.png")
+	os.Remove("./temp/img11.png")
+	os.Remove("./temp/img12.png")
+	os.Remove("./temp/img13.png")
 	if len(seq.images) != 4 {
 		t.Fail()
 	}
@@ -73,20 +93,22 @@ func TestFileSequenceEndsWithMissingFile(t *testing.T) {
 
 //func TestFileSequenceEndsWithInvalidFile
 func TestFileSequenceEndsWithInvalidFile(t *testing.T) {
-	createImageFile("./files/img10.png", 10, 10)
-	createImageFile("./files/img11.png", 10, 10)
-	createImageFile("./files/img12.png", 10, 10)
-	createImageFile("./files/img13.png", 11, 10)
-	os.Open("./files/img11.png")
+	createTestDir()
+	defer removeTestDir()
+	createImageFile("./temp/img10.png", 10, 10)
+	createImageFile("./temp/img11.png", 10, 10)
+	createImageFile("./temp/img12.png", 10, 10)
+	createImageFile("./temp/img13.png", 11, 10)
+	os.Open("./temp/img11.png")
 
-	seq, err := FromString("./files/img10.png")
+	seq, err := initImgSeqString("./temp/img10.png")
 	if err != nil {
 		panic("Failed to create image seq")
 	}
-	os.Remove("./files/img10.png")
-	os.Remove("./files/img11.png")
-	os.Remove("./files/img12.png")
-	os.Remove("./files/img13.png")
+	os.Remove("./temp/img10.png")
+	os.Remove("./temp/img11.png")
+	os.Remove("./temp/img12.png")
+	os.Remove("./temp/img13.png")
 	if len(seq.images) != 3 {
 		t.Fail()
 	}
