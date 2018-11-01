@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"image"
 	"os"
@@ -15,12 +14,9 @@ type ImgSeq struct {
 }
 
 func initImgSeqString(filepath string) (ImgSeq, error) {
-	var s string
-
 	file, err := os.Open(filepath)
 	if err != nil {
-		s = fmt.Sprintf("Error opening file %s", filepath)
-		return ImgSeq{}, errors.New(s)
+		return ImgSeq{}, err
 	}
 	defer file.Close()
 
@@ -58,18 +54,15 @@ func initImgSeqFile(f *os.File) (ImgSeq, error) {
 			nextFilePath := re.ReplaceAllString(filepath, nums)
 			err = imgseq.append(nextFilePath)
 		}
-		fmt.Println(err)
 	}
 	return imgseq, nil
 }
 
 func (imgseq *ImgSeq) append(filepath string) error {
-	var s string
 	// Check if file exists and is a valid image
 	file, err := os.Open(filepath)
 	if err != nil {
-		s = fmt.Sprintf("Error opening file %s", filepath)
-		return errors.New(s)
+		return err
 	}
 	defer file.Close()
 	config, _, err := image.DecodeConfig(file)
@@ -78,8 +71,7 @@ func (imgseq *ImgSeq) append(filepath string) error {
 	}
 	if config != imgseq.config {
 		// Image does not have same dimentions or
-		s = fmt.Sprintf("Image %s does not match sequence", filepath)
-		return errors.New(s)
+		return fmt.Errorf("non-conforming image: %s", filepath)
 	}
 	imgseq.images = append(imgseq.images, file)
 	return nil

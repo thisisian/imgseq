@@ -37,7 +37,6 @@ func createImageFile(name string, width int, height int) {
 	if err := f.Close(); err != nil {
 		panic(err)
 	}
-
 }
 
 func TestSingleFileNoNums(t *testing.T) {
@@ -50,7 +49,7 @@ func TestSingleFileNoNums(t *testing.T) {
 	}
 	os.Remove("./temp/img.png")
 	if len(seq.images) != 1 {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -64,7 +63,7 @@ func TestSingleFileWithNums(t *testing.T) {
 	}
 	os.Remove("./temp/img09.png")
 	if len(seq.images) != 1 {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -72,22 +71,21 @@ func TestSingleFileWithNums(t *testing.T) {
 func TestFileSequenceEndsWithMissingFile(t *testing.T) {
 	createTestDir()
 	defer removeTestDir()
-	createImageFile("./temp/img10.png", 10, 10)
-	createImageFile("./temp/img11.png", 10, 10)
-	createImageFile("./temp/img12.png", 10, 10)
-	createImageFile("./temp/img13.png", 10, 10)
-	os.Open("./temp/img11.png")
+	files := []string{"./temp/img10.png",
+		"./temp/img11.png",
+		"./temp/img12.png",
+		"./temp/img13.png"}
+	for _, v := range files {
+		createImageFile(v, 10, 10)
+		defer os.Remove(v)
+	}
 
 	seq, err := initImgSeqString("./temp/img10.png")
 	if err != nil {
 		panic("Failed to create image seq")
 	}
-	os.Remove("./temp/img10.png")
-	os.Remove("./temp/img11.png")
-	os.Remove("./temp/img12.png")
-	os.Remove("./temp/img13.png")
 	if len(seq.images) != 4 {
-		t.Fail()
+		t.FailNow()
 	}
 }
 
@@ -95,23 +93,14 @@ func TestFileSequenceEndsWithMissingFile(t *testing.T) {
 func TestFileSequenceEndsWithInvalidFile(t *testing.T) {
 	createTestDir()
 	defer removeTestDir()
-	createImageFile("./temp/img10.png", 10, 10)
-	createImageFile("./temp/img11.png", 10, 10)
-	createImageFile("./temp/img12.png", 10, 10)
-	createImageFile("./temp/img13.png", 11, 10)
+	createImageFile("./temp/img13.png", 11, 10) // Different dimentions
+	defer os.Remove("./temp/img13.png")
 	os.Open("./temp/img11.png")
-
 	seq, err := initImgSeqString("./temp/img10.png")
 	if err != nil {
 		panic("Failed to create image seq")
 	}
-	os.Remove("./temp/img10.png")
-	os.Remove("./temp/img11.png")
-	os.Remove("./temp/img12.png")
-	os.Remove("./temp/img13.png")
 	if len(seq.images) != 3 {
-		t.Fail()
+		t.FailNow()
 	}
 }
-
-//func TestFileSequenceEndsWith

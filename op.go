@@ -11,8 +11,8 @@ type Operation interface {
 }
 
 type timeshift struct {
-	filterImg  ImgSeq
-	filterRage int
+	filterImg   ImgSeq
+	filterRange int
 }
 
 func initTimeshift(opStr string) (timeshift, error) {
