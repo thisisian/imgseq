@@ -5,6 +5,13 @@ import (
 	"os"
 )
 
+func isDigit(c byte) bool {
+	if c >= '0' || c <= '9' {
+		return true
+	}
+	return false
+}
+
 func main() {
 	args := os.Args[1:]
 	if len(args) != 3 {

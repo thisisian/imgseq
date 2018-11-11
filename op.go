@@ -48,7 +48,18 @@ func initTimeshift(opStr string) (timeshift, error) {
 }
 
 func (t timeshift) Apply(imgSeq ImgSeq) (ImgSeq, error) {
-	return imgSeq, nil // TODO
+	for i, v := imgSeq.images {
+		f, err := os.Open(v)
+		if err != nil {
+			return ImgSeq{}, err
+		}
+	}
+}
+
+// createShiftMap takes a single in a timeshift object and creates an associative map
+// shift distance -> pixel location
+func (t timeshift) createShiftMap(i int) (map[int]int) {
+
 }
 
 // Parses options into parallel slices of options and values
