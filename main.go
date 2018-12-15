@@ -22,7 +22,7 @@ func main() {
 	fmt.Printf("Operation: %s\n", args[1])  // DEBUG
 	fmt.Printf("Options: %s\n", args[2])    // DEBUG
 
-	imgseq, err := initImgSeqString(args[0])
+	imgseq, err := initImgSeq(args[0])
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
 		os.Exit(1)

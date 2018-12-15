@@ -13,13 +13,13 @@ import (
 )
 
 type ImgSeq struct {
-	images []*os.File
+	images []string
 	config image.Config
 }
 
-// initImgSeqString returns an image sequence whose first element
+// initImgSeq returns an image sequence whose first element
 // is the file located in input string.
-func initImgSeqString(filepath string) (ImgSeq, error) {
+func initImgSeq(filepath string) (ImgSeq, error) {
 	filepath = path.Clean(filepath)
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -27,23 +27,15 @@ func initImgSeqString(filepath string) (ImgSeq, error) {
 	}
 	defer file.Close()
 
-	imgseq, err := initImgSeqFile(file)
-	if err != nil {
-		return ImgSeq{}, err
-	}
-	return imgseq, nil
-}
-
-func initImgSeqFile(f *os.File) (ImgSeq, error) {
-	config, _, err := image.DecodeConfig(f)
+	config, _, err := image.DecodeConfig(file)
 	if err != nil {
 		return ImgSeq{}, err
 	}
 
-	images := []*os.File{f}
+	filepath = file.Name()
+	images := []string{filepath}
 	imgseq := ImgSeq{images, config}
 
-	filepath := f.Name()
 	nextFilePath := filepath
 	for err == nil {
 		nextFilePath, err = nextFile(nextFilePath)
@@ -55,7 +47,7 @@ func initImgSeqFile(f *os.File) (ImgSeq, error) {
 	return imgseq, nil
 }
 
-// Returns the next file in a series from the filename
+// Returns the next filepath in a series given a filename
 // Assumes clean filename
 func nextFile(file string) (string, error) {
 	ext := path.Ext(file)
@@ -111,9 +103,8 @@ func (imgseq *ImgSeq) append(filepath string) error {
 		return err
 	}
 	if config != imgseq.config {
-		// Image does not have same dimentions or
 		return fmt.Errorf("non-conforming image: %s", filepath)
 	}
-	imgseq.images = append(imgseq.images, file)
+	imgseq.images = append(imgseq.images, filepath)
 	return nil
 }

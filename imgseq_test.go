@@ -50,7 +50,7 @@ func TestSingleFileNoNums(t *testing.T) {
 	createTestDir()
 	defer removeTestDir()
 	createImageFile("./temp/img.png", 10, 10)
-	seq, err := initImgSeqString("./temp/img.png")
+	seq, err := initImgSeq("./temp/img.png")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -64,7 +64,7 @@ func TestSingleFileWithNums(t *testing.T) {
 	createTestDir()
 	defer removeTestDir()
 	createImageFile("./temp/img09.png", 10, 10)
-	seq, err := initImgSeqString("./temp/img09.png")
+	seq, err := initImgSeq("./temp/img09.png")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -86,7 +86,7 @@ func TestFileSequenceEndsWithMissingFile(t *testing.T) {
 		defer os.Remove(v)
 	}
 
-	seq, err := initImgSeqString("./temp/img10.png")
+	seq, err := initImgSeq("./temp/img10.png")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -109,7 +109,7 @@ func TestFileSequenceEndsWithInvalidFile(t *testing.T) {
 	createImageFile("./temp/img14.png", 11, 10) // Different dimentions
 	defer os.Remove("./temp/img14.png")
 
-	seq, err := initImgSeqString("./temp/img10.png")
+	seq, err := initImgSeq("./temp/img10.png")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
