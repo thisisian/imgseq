@@ -18,7 +18,7 @@ func main() {
 
 	imgseq, err := initImgSeq(args[0])
 	if err != nil {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
 
@@ -28,7 +28,7 @@ func main() {
 		{
 			op, err = initTimeshift(args[2])
 			if err != nil {
-				fmt.Fprint(os.Stderr, err)
+				fmt.Fprintf(os.Stderr, "%s\n", err)
 				os.Exit(1)
 			}
 		}
