@@ -67,14 +67,14 @@ func (t timeshift) createShiftMap(i int) (map[uint][]image.Point, error) {
 
 	shifts := make(map[uint][]image.Point)
 	bounds := img.Bounds()
-	maxUint32 := float64(math.MaxUint32)
+	maxV := float64(math.MaxUint16)
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			r, g, b, _ := img.At(x, y).RGBA()
 			// Convert to grayscale and calculate shift distance
-			dist := uint((0.2989*float64(r)/maxUint32 +
-				0.5870*float64(g)/maxUint32 +
-				0.1140*float64(b)/maxUint32) * float64(t.filterRange))
+			dist := uint((0.2989*float64(r)/maxV +
+				0.5870*float64(g)/maxV +
+				0.1140*float64(b)/maxV) * float64(t.filterRange))
 			pts, ok := shifts[dist]
 			if !ok {
 				shifts[dist] = []image.Point{image.Point{x, y}}
@@ -112,13 +112,13 @@ func (t timeshift) Apply(imgSeq ImgSeq) (ImgSeq, error) {
 	for i := range imgSeq.images {
 		curr := image.NewRGBA(image.Rect(0, 0, imgSeq.config.Width, imgSeq.config.Height))
 		// Create shift map from corresponding image from filter sequence
-		shifts, err := t.createShiftMap(i % (len(t.filterImg.images) + 1))
+		shifts, err := t.createShiftMap(i % len(t.filterImg.images))
 		if err != nil {
 			return ret, err
 		}
 		// Copy pixels from img corresponding to shift distance
 		for dist, pts := range shifts {
-			srcF, err := os.Open(imgSeq.images[(dist % uint((len(imgSeq.images) + 1)))])
+			srcF, err := os.Open(imgSeq.images[(dist+uint(i))%(uint(len(imgSeq.images)))])
 			if err != nil {
 				return ret, err
 			}
@@ -135,7 +135,7 @@ func (t timeshift) Apply(imgSeq ImgSeq) (ImgSeq, error) {
 			srcF.Close()
 		}
 		// Save the image
-		numformat := fmt.Sprintf("%%0%dd", len(imgSeq.images))
+		numformat := fmt.Sprintf("%%0%dd", base10Width(uint(len(imgSeq.images))))
 		num := fmt.Sprintf(numformat, i)
 		outPath := fmt.Sprintf("out%s.png", num)
 		outF, err := os.Create(outPath)
